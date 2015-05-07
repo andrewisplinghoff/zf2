@@ -9,6 +9,8 @@
 
 namespace Zend\Mail\Protocol;
 
+use Zend\Mail\Transport\Exception as TransportException;
+
 /**
  * SMTP implementation of Zend\Mail\Protocol\AbstractProtocol
  *
@@ -298,7 +300,15 @@ class Smtp extends AbstractProtocol
      */
     public function rset()
     {
-        $this->_send('RSET');
+        try {
+            $this->_send('RSET');
+        } catch(TransportException\RuntimeException $e) {
+            if (strpos($e->getMessage(), 'timeout exceeded') !== false) {
+                $this->_stopSession();
+            }
+            throw $e;
+        }
+
         // MS ESMTP doesn't follow RFC, see [ZF-1377]
         $this->_expect(array(250, 220));
 
