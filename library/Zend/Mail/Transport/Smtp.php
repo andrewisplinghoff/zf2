@@ -231,7 +231,7 @@ class Smtp implements TransportInterface
             try {
                 // Reset connection to ensure reliable transaction
                 $connection->rset();
-            } catch (Exception\RuntimeException $e) {
+            } catch (ProtocolException\RuntimeException $e) {
                 // Try to reestablish the connection if a timeout occurred
                 if (strpos($e->getMessage(), 'timeout exceeded') !== false) {
                     $connection = $this->connect();

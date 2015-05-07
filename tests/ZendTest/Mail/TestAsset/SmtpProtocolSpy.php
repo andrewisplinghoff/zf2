@@ -81,6 +81,14 @@ class SmtpProtocolSpy extends Smtp
 
     protected function _expect($code, $timeout = null)
     {
+        if ($this->serverTimeout) {
+            if ($this->connect) {
+                $this->connect = false;
+                throw new \Zend\Mail\Protocol\Exception\RuntimeException('4.4.2 host Error: timeout exceeded');
+            } else {
+                throw new \Zend\Mail\Protocol\Exception\RuntimeException('Could not read from host');
+            }
+        }
         return '';
     }
 
